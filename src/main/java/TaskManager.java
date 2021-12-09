@@ -17,22 +17,16 @@ public class TaskManager {
 
         while (!command.equals("exit")) {
             switch (command) {
-                case "add":
-                    tasks = add(CSVFilePath, tasks);
-                    break;
-                case "remove":
-                    tasks = remove(CSVFilePath, tasks);
-                    break;
-                case "list":
-                    list(tasks);
-                    break;
+                case "add" -> tasks = add(CSVFilePath, tasks);
+                case "remove" -> tasks = remove(CSVFilePath, tasks);
+                case "list" -> list(tasks);
             }
 
             System.out.println(ConsoleColors.BLUE + "Please select an option:");
             System.out.println(ConsoleColors.RESET + "add\nremove\nlist\nexit");
             command = terminalReader.nextLine().trim();
         }
-        System.out.println("Bye, bye.");
+        System.out.println(ConsoleColors.YELLOW + "Bye, bye.");
     }
 
     public static String[][] updateTasksFromFile(Path tasksFilePath) {
@@ -46,7 +40,7 @@ public class TaskManager {
             }
             return updatedTasks;
         } catch (IOException e) {
-            System.out.println("incorrect file path");
+            System.out.println(ConsoleColors.RED + "incorrect file path");
             return new String[0][0];
         }
     }
@@ -67,11 +61,11 @@ public class TaskManager {
             try {
                 Files.writeString(tasksFilePath, String.join(", ", task) + "\n", StandardOpenOption.APPEND);
             } catch (IOException e) {
-                System.out.println("incorrect file path");
+                System.out.println(ConsoleColors.RED + "incorrect file path");
             }
             return ArrayUtils.add(tasks, task);
         } else {
-            System.out.println("provided value is neither 'true' nor 'false'");
+            System.out.println(ConsoleColors.RED + "provided value is neither 'true' nor 'false'");
             return tasks;
         }
     }
@@ -82,23 +76,27 @@ public class TaskManager {
         System.out.println("Please select task to remove by providing it's number:");
         if (scanner.hasNextInt()) {
             int taskNo = scanner.nextInt();
-            String[][] updatedTasks = ArrayUtils.remove(tasks, taskNo);
+            if (taskNo > 0 && taskNo < tasks.length) {
+                String[][] updatedTasks = ArrayUtils.remove(tasks, taskNo);
 
-            try {
-                StringBuilder updatedTasksStr = new StringBuilder();
-                for (String[] task : updatedTasks) {
-                    updatedTasksStr.append(String.join(", ", task));
-                    updatedTasksStr.append("\n");
+                try {
+                    StringBuilder updatedTasksStr = new StringBuilder();
+                    for (String[] task : updatedTasks) {
+                        updatedTasksStr.append(String.join(", ", task));
+                        updatedTasksStr.append("\n");
+                    }
+                    Files.writeString(tasksFilePath, updatedTasksStr.toString());
+                } catch (IOException e) {
+                    System.out.println(ConsoleColors.RED + "incorrect file path");
                 }
-                Files.writeString(tasksFilePath, updatedTasksStr.toString());
-            } catch (IOException e) {
-                System.out.println("incorrect file path");
+                return updatedTasks;
+            } else {
+                System.out.println(ConsoleColors.RED + "task with provided index does not exist");
             }
-            return updatedTasks;
         } else {
-            System.out.println("provided value is not a number");
-            return tasks;
+            System.out.println(ConsoleColors.RED + "provided value is not a number");
         }
+        return tasks;
     }
 
     public static void list(String[][] tasks) {
