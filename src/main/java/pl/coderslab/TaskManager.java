@@ -1,3 +1,5 @@
+package pl.coderslab;
+
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ public class TaskManager {
     public static void main(String[] args) {
         Scanner terminalReader = new Scanner(System.in);
         String command = "";
-        Path CSVFilePath = Paths.get("src", "main", "java", "tasks.csv");
+        Path CSVFilePath = Paths.get("src", "main", "java", "pl/coderslab/tasks.csv");
         String[][] tasks = updateTasksFromFile(CSVFilePath);
 
         while (!command.equals("exit")) {
