@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,7 +24,7 @@ public class TaskManager {
                     tasks = remove(CSVFilePath, tasks);
                     break;
                 case "list":
-                    // list
+                    list(tasks);
                     break;
             }
 
@@ -91,7 +90,6 @@ public class TaskManager {
                     updatedTasksStr.append(String.join(", ", task));
                     updatedTasksStr.append("\n");
                 }
-                updatedTasksStr.deleteCharAt(updatedTasksStr.length() - 1);
                 Files.writeString(tasksFilePath, updatedTasksStr.toString());
             } catch (IOException e) {
                 System.out.println("incorrect file path");
@@ -100,6 +98,13 @@ public class TaskManager {
         } else {
             System.out.println("provided value is not a number");
             return tasks;
+        }
+    }
+
+    public static void list(String[][] tasks) {
+        for (int i = 0; i < tasks.length; i++) {
+            System.out.print(i + " : ");
+            System.out.println(String.join("  ", tasks[i]));
         }
     }
 }
