@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,7 +22,7 @@ public class TaskManager {
                     tasks = add(CSVFilePath, tasks);
                     break;
                 case "remove":
-                    // remove
+                    tasks = remove(CSVFilePath, tasks);
                     break;
                 case "list":
                     // list
@@ -65,13 +66,39 @@ public class TaskManager {
 
             String[] task = {taskDes, takDueDate, taskIsImportant};
             try {
-                Files.writeString(tasksFilePath, String.join(", ", task), StandardOpenOption.APPEND);
+                Files.writeString(tasksFilePath, String.join(", ", task) + "\n", StandardOpenOption.APPEND);
             } catch (IOException e) {
                 System.out.println("incorrect file path");
             }
             return ArrayUtils.add(tasks, task);
         } else {
             System.out.println("provided value is neither 'true' nor 'false'");
+            return tasks;
+        }
+    }
+
+    public static String[][] remove(Path tasksFilePath, String[][] tasks) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please select task to remove by providing it's number:");
+        if (scanner.hasNextInt()) {
+            int taskNo = scanner.nextInt();
+            String[][] updatedTasks = ArrayUtils.remove(tasks, taskNo);
+
+            try {
+                StringBuilder updatedTasksStr = new StringBuilder();
+                for (String[] task : updatedTasks) {
+                    updatedTasksStr.append(String.join(", ", task));
+                    updatedTasksStr.append("\n");
+                }
+                updatedTasksStr.deleteCharAt(updatedTasksStr.length() - 1);
+                Files.writeString(tasksFilePath, updatedTasksStr.toString());
+            } catch (IOException e) {
+                System.out.println("incorrect file path");
+            }
+            return updatedTasks;
+        } else {
+            System.out.println("provided value is not a number");
             return tasks;
         }
     }
