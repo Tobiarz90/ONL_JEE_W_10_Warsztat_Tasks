@@ -1,7 +1,10 @@
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,7 +18,7 @@ public class TaskManager {
         while (!command.equals("exit")) {
             switch (command) {
                 case "add":
-                    // add
+                    tasks = add(CSVFilePath, tasks);
                     break;
                 case "remove":
                     // remove
@@ -45,6 +48,31 @@ public class TaskManager {
         } catch (IOException e) {
             System.out.println("incorrect file path");
             return new String[0][0];
+        }
+    }
+
+    public static String[][] add(Path tasksFilePath, String[][] tasks) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please add task description:");
+        String taskDes = scanner.nextLine().trim();
+        System.out.println("Please add task due date [YYYY-MM-DD]:");
+        String takDueDate = scanner.nextLine().trim();
+
+        System.out.println("Is your task important [true/false]:");
+        if (scanner.hasNextBoolean()) {
+            String taskIsImportant = scanner.next();
+
+            String[] task = {taskDes, takDueDate, taskIsImportant};
+            try {
+                Files.writeString(tasksFilePath, String.join(", ", task), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                System.out.println("incorrect file path");
+            }
+            return ArrayUtils.add(tasks, task);
+        } else {
+            System.out.println("provided value is neither 'true' nor 'false'");
+            return tasks;
         }
     }
 }
